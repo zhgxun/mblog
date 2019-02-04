@@ -246,6 +246,7 @@
 	</profiles>
 
 	<build>
+		<finalName>mblog</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

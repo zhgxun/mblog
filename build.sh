@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # 拉取最新的源码
 # git pull
 

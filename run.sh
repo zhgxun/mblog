@@ -1,68 +1,70 @@
 #!/bin/bash
-APP_NAME=mblog-latest.jar
+
+APP_NAME=mblog.jar
 
 usage() {
     echo "case: sh run.sh [start|stop|restart|status]"
     exit 1
 }
 
-is_exist(){
-	pid=`ps -ef|grep $APP_NAME|grep -v grep|awk '{print $2}' `
-	if [ -z "${pid}" ]; then
+is_exist() {
+	pid=`ps -ef | grep ${APP_NAME} | grep -v grep | awk '{print $2}' `
+	if [[ -z "${pid}" ]]; then
 		return 1
 	else
 		return 0
 	fi
 }
 
-start(){
+start() {
 	is_exist
-	if [ $? -eq "0" ]; then
+	if [[ $? -eq "0" ]]; then
 		echo "${APP_NAME} running. pid=${pid}"
 	else
-		nohup java -jar ./target/$APP_NAME > log.file 2>log.error &
+	    # 启动增加堆内存控制和记录gc日志
+		nohup java -Xms256m -Xmx256m -Xlog:gc=info:file=gc.log:time -jar ./${APP_NAME} > info.log 2> error.log &
 		echo "${APP_NAME} started"
 	fi
 }
 
-stop(){
+stop() {
 	is_exist
-	if [ $? -eq "0" ]; then
-		kill -9 $pid
+	if [[ $? -eq "0" ]]; then
+		kill -9 ${pid}
 		echo "${pid} stopped"
 	else
 		echo "${APP_NAME} not running"
 	fi
 }
 
-status(){
+status() {
 	is_exist
-	if [ $? -eq "0" ]; then
+	if [[ $? -eq "0" ]]; then
 		echo "${APP_NAME} running. Pid is ${pid}"
 	else
 		echo "${APP_NAME} not running"
 	fi
 }
 
-restart(){
+restart() {
 	stop
 	start
 }
 
 case "$1" in
-	"start")
-		start
-		;;
-	"stop")
-		stop
-		;;
-	"status")
-		status
-		;;
-	"restart")
-		restart
-		;;
-	*)
+"start")
+    start
+    ;;
+"stop")
+    stop
+    ;;
+"status")
+    status
+    ;;
+"restart")
+    restart
+    ;;
+*)
     usage
     ;;
 esac
